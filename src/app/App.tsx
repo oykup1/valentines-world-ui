@@ -1,5 +1,9 @@
 
 import { useState } from 'react';
+import { supabase } from '../lib/supabase'
+
+
+
 
 const prompts = [
   { id: 1, text: "My very first impression of you was..." },
@@ -37,10 +41,23 @@ export default function App() {
     setAnswers({ ...answers, [id]: value });
   };
 
-  const handleCreateLink = () => {
-    console.log('Creating secret link with answers:', answers);
-    // Handle link creation logic here
-  };
+  const handleCreateLink = async () => {
+  const { data, error } = await supabase
+    .from('valentine_worlds')
+    .insert([{ prompts: answers }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error saving world:', error);
+    alert('Something went wrong 😭');
+    return;
+  }
+
+  const link = `https://your-game-domain.vercel.app/game/${data.id}`;
+
+  alert(`Your secret world is ready 💖\n\n${link}`);
+};
 
   return (
     <div className="size-full flex items-center justify-center overflow-auto py-8 px-4" 
