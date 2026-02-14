@@ -42,9 +42,19 @@ export default function App() {
   };
 
   const handleCreateLink = async () => {
+  const formattedPrompts = selectedPrompts.map((id) => {
+    const prompt = prompts.find(p => p.id === id);
+    return {
+      question: prompt?.text,
+      answer: answers[id] || ""
+    };
+  });
+
+  console.log("Saving:", formattedPrompts);
+
   const { data, error } = await supabase
     .from('valentine_worlds')
-    .insert([{ prompts: answers }])
+    .insert([{ prompts: formattedPrompts }])
     .select()
     .single();
 
@@ -55,7 +65,6 @@ export default function App() {
   }
 
   const link = `https://your-game-domain.vercel.app/game/${data.id}`;
-
   alert(`Your secret world is ready 💖\n\n${link}`);
 };
 
