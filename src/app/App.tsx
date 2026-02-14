@@ -53,7 +53,7 @@ export default function App() {
   console.log("Saving:", formattedPrompts);
 
   const { data, error } = await supabase
-    .from('valentine_worlds')
+    .from('valentines_worlds')
     .insert([{ prompts: formattedPrompts }])
     .select()
     .single();
