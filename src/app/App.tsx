@@ -44,7 +44,7 @@ export default function App() {
   };
 
   return (
-    <div className="size-full flex items-center justify-center overflow-auto py-8 px-4" 
+    <div className="min-h-screen w-full flex items-center justify-center overflow-auto py-8 px-4" 
          style={{ 
            background: 'linear-gradient(135deg, #fce4ec 0%, #f3e5f5 50%, #e8f5e9 100%)',
            fontFamily: "'Silkscreen', monospace"
