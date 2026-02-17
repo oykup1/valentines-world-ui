@@ -68,7 +68,7 @@ export default function App() {
     return;
   }
 
-  const link = `https://your-game-domain.vercel.app/game/${data.id}`;
+  const link = `https://valentines-world.vercel.app/game/${data.id}`;
   setGeneratedLink(link);
   setScreen('link-created');
 };
@@ -199,10 +199,11 @@ export default function App() {
                 <span className="text-pink-400 animate-pulse" style={{ animationDelay: '0.5s' }}>💗</span>
               </div>
 
-              {/* Answer inputs */}
+             {/* Answer inputs */}
               <div className="space-y-5">
                 {selectedPrompts.map((promptId, index) => {
                   const prompt = prompts.find(p => p.id === promptId);
+                  const charCount = (answers[promptId] || '').length;
                   return (
                     <div key={promptId} className="space-y-2">
                       {/* Question */}
@@ -231,6 +232,12 @@ export default function App() {
                         />
                         {/* Small decorative flower */}
                         <span className="absolute -right-2 -top-2 text-xs">🌸</span>
+                      </div>
+                      {/* Character counter */}
+                      <div className="text-right">
+                        <span className={`text-[10px] ${charCount > 500 ? 'text-[#d4668b]' : 'text-[#8b6f47]'}`}>
+                          {charCount}/579
+                        </span>
                       </div>
                     </div>
                   );
