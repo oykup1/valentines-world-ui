@@ -1,9 +1,4 @@
-
 import { useState } from 'react';
-import { supabase } from '../lib/supabase'
-
-
-
 
 const prompts = [
   { id: 1, text: "My very first impression of you was..." },
@@ -38,35 +33,15 @@ export default function App() {
   };
 
   const handleAnswerChange = (id: number, value: string) => {
-    setAnswers({ ...answers, [id]: value });
+    if (value.length <= 579) {
+      setAnswers({ ...answers, [id]: value });
+    }
   };
 
-  const handleCreateLink = async () => {
-  const formattedPrompts = selectedPrompts.map((id) => {
-    const prompt = prompts.find(p => p.id === id);
-    return {
-      question: prompt?.text,
-      answer: answers[id] || ""
-    };
-  });
-
-  console.log("Saving:", formattedPrompts);
-
-  const { data, error } = await supabase
-    .from('valentines_worlds')
-    .insert([{ prompts: formattedPrompts }])
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error saving world:', error);
-    alert('Something went wrong 😭');
-    return;
-  }
-
-  const link = `https://your-game-domain.vercel.app/game/${data.id}`;
-  alert(`Your secret world is ready 💖\n\n${link}`);
-};
+  const handleCreateLink = () => {
+    console.log('Creating secret link with answers:', answers);
+    // Handle link creation logic here
+  };
 
   return (
     <div className="size-full flex items-center justify-center overflow-auto py-8 px-4" 
@@ -223,7 +198,14 @@ export default function App() {
                             minHeight: '80px'
                           }}
                           rows={3}
+                          maxLength={579}
                         />
+                        {/* Character counter */}
+                        <div className="text-right mt-1">
+                          <span className={`text-[10px] ${(answers[promptId] || '').length > 500 ? 'text-[#d4668b]' : 'text-[#8b6f47]'}`}>
+                            {(answers[promptId] || '').length}/579
+                          </span>
+                        </div>
                         {/* Small decorative flower */}
                         <span className="absolute -right-2 -top-2 text-xs">🌸</span>
                       </div>
