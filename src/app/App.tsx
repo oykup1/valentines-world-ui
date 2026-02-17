@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { supabase } from '../lib/supabase'
+
+
+
 
 const prompts = [
   { id: 1, text: "My very first impression of you was..." },
@@ -14,9 +18,12 @@ const prompts = [
 ];
 
 export default function App() {
-  const [screen, setScreen] = useState<'selection' | 'answers'>('selection');
+  const [screen, setScreen] = useState<'selection' | 'answers' | 'link-created'>('selection');
   const [selectedPrompts, setSelectedPrompts] = useState<number[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [generatedLink, setGeneratedLink] = useState<string>('');
+  const [copied, setCopied] = useState(false);
+
 
   const togglePrompt = (id: number) => {
     if (selectedPrompts.includes(id)) {
@@ -33,15 +40,38 @@ export default function App() {
   };
 
   const handleAnswerChange = (id: number, value: string) => {
-    if (value.length <= 579) {
-      setAnswers({ ...answers, [id]: value });
+    if (value.length <= 579){
+    setAnswers({ ...answers, [id]: value });
     }
   };
 
-  const handleCreateLink = () => {
-    console.log('Creating secret link with answers:', answers);
-    // Handle link creation logic here
-  };
+  const handleCreateLink = async () => {
+  const formattedPrompts = selectedPrompts.map((id) => {
+    const prompt = prompts.find(p => p.id === id);
+    return {
+      question: prompt?.text,
+      answer: answers[id] || ""
+    };
+  });
+
+  console.log("Saving:", formattedPrompts);
+
+  const { data, error } = await supabase
+    .from('valentines_worlds')
+    .insert([{ prompts: formattedPrompts }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error saving world:', error);
+    alert('Something went wrong 😭');
+    return;
+  }
+
+  const link = `https://your-game-domain.vercel.app/game/${data.id}`;
+  setGeneratedLink(link);
+  setScreen('link-created');
+};
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center overflow-auto py-8 px-4" 
@@ -152,7 +182,7 @@ export default function App() {
                 </button>
               </div>
             </div>
-          ) : (
+          ) : screen === 'answers' ? (
             // ANSWER ENTRY SCREEN
             <div className="space-y-6">
               {/* Title */}
@@ -198,14 +228,7 @@ export default function App() {
                             minHeight: '80px'
                           }}
                           rows={3}
-                          maxLength={579}
                         />
-                        {/* Character counter */}
-                        <div className="text-right mt-1">
-                          <span className={`text-[10px] ${(answers[promptId] || '').length > 500 ? 'text-[#d4668b]' : 'text-[#8b6f47]'}`}>
-                            {(answers[promptId] || '').length}/579
-                          </span>
-                        </div>
                         {/* Small decorative flower */}
                         <span className="absolute -right-2 -top-2 text-xs">🌸</span>
                       </div>
@@ -235,7 +258,74 @@ export default function App() {
                 </button>
               </div>
             </div>
-          )}
+          ) : (
+            // LINK CREATED SCREEN
+            <div className="space-y-6">
+    {/* Title */}
+    <div className="text-center space-y-2">
+      <h1 className="text-2xl text-[#d4668b] tracking-wide" style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.1)' }}>
+        Your Secret Link Is Ready 💖
+      </h1>
+      <p className="text-xs text-[#8b6f47]">Share this link with your Valentine</p>
+    </div>
+
+    {/* Sparkles decoration */}
+    <div className="flex justify-center gap-4 text-yellow-400">
+      <span className="text-xs animate-pulse">✨</span>
+      <span className="text-xs animate-pulse" style={{ animationDelay: '0.3s' }}>✨</span>
+      <span className="text-xs animate-pulse" style={{ animationDelay: '0.6s' }}>✨</span>
+    </div>
+
+    {/* Link display box */}
+    <div className="relative bg-white/80 rounded-lg p-4 border-4 border-[#e8d5c4]">
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          value={generatedLink}
+          readOnly
+          className="flex-1 p-2 text-xs bg-transparent border-2 border-[#e8d5c4] rounded focus:outline-none"
+          style={{
+            fontFamily: "'Silkscreen', monospace",
+          }}
+        />
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(generatedLink);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }}
+          className="px-4 py-2 text-xs bg-[#ffc1d9] border-2 border-[#d4668b] text-[#8b4866] rounded hover:bg-[#ffb3d0] transition-all"
+        >
+          {copied ? 'Copied! 💕' : 'Copy 📋'}
+        </button>
+      </div>
+    </div>
+
+    {/* Decorative hearts */}
+    <div className="flex justify-center gap-4">
+      <span className="text-pink-400 animate-pulse">💗</span>
+      <span className="text-pink-400 animate-pulse" style={{ animationDelay: '0.3s' }}>💗</span>
+      <span className="text-pink-400 animate-pulse" style={{ animationDelay: '0.6s' }}>💗</span>
+    </div>
+
+    {/* Buttons */}
+    <div className="flex justify-center pt-4">
+      <button
+        onClick={() => {
+          setScreen('selection');
+          setSelectedPrompts([]);
+          setAnswers({});
+        }}
+        className="px-8 py-4 text-sm bg-[#d4a5a5] border-4 border-[#b88a8a] text-[#6b4444] rounded-lg hover:bg-[#c99595] hover:scale-105 transition-all cursor-pointer shadow-lg"
+        style={{
+          boxShadow: '0 6px 20px rgba(180, 138, 138, 0.4)',
+        }}
+      >
+        Create Another Link ✨
+      </button>
+    </div>
+  </div>
+)}
 
           {/* Bottom decorative edge */}
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[#e8d5c4] text-2xl">✿</div>
