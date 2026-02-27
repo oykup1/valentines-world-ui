@@ -40,7 +40,7 @@ export default function App() {
   };
 
   const handleAnswerChange = (id: number, value: string) => {
-    if (value.length <= 579){
+    if (value.length <= 440){
     setAnswers({ ...answers, [id]: value });
     }
   };
@@ -116,7 +116,7 @@ export default function App() {
               {/* Title */}
               <div className="text-center space-y-2">
                 <h1 className="text-2xl text-[#d4668b] tracking-wide" style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.1)' }}>
-                  Choose 6 Prompts To Send To Your Valentine💌
+                  Choose 6 Letters To Send To Your Crush💌
                 </h1>
                 <div className="flex items-center justify-center gap-2 text-xs text-[#8b6f47]">
                   <span className="px-3 py-1 bg-white/60 rounded-full border-2 border-[#e8d5c4]">
@@ -236,7 +236,7 @@ export default function App() {
                       {/* Character counter */}
                       <div className="text-right">
                         <span className={`text-[10px] ${charCount > 500 ? 'text-[#d4668b]' : 'text-[#8b6f47]'}`}>
-                          {charCount}/579
+                          {charCount}/440
                         </span>
                       </div>
                     </div>
