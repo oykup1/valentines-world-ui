@@ -116,7 +116,7 @@ export default function App() {
               {/* Title */}
               <div className="text-center space-y-2">
                 <h1 className="text-2xl text-[#d4668b] tracking-wide" style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.1)' }}>
-                  Choose 6 Letters To Send To Your Crush💌
+                  Choose 6 Letters To Send To Your Crush
                 </h1>
                 <div className="flex items-center justify-center gap-2 text-xs text-[#8b6f47]">
                   <span className="px-3 py-1 bg-white/60 rounded-full border-2 border-[#e8d5c4]">
